@@ -102,7 +102,11 @@ void print_ast(Node* _nd) {
     print_ast(_nd->rc);
     putchar(')');
     break;
-  case NNEG: break;
+  case NNEG:
+    printf("(NEG: ");
+    print_ast(_nd->lc);
+    putchar(')');
+    break;
   case NASSIGN:
     printf("(ASSIGN: ");
     print_ast(_nd->lc);

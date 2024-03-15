@@ -33,6 +33,7 @@ static Node* p_parentexpr();
 static Node* p_mul_(Node* _n);
 static Node* p_primitive();
 static Node* p_NUM();
+static Node* p_negexpr();
 
 static Node* p_NUM() {
   if (!expect(NUM)) return NULL;
@@ -64,25 +65,25 @@ static Node* p_parentexpr() {
 static Node* p_mul_(Node* _n) {
   Token* backtrack = token;
   if (expect_next(MUL)) {
-    Node* parentexpr = p_parentexpr();
-    if (parentexpr != NULL) {
-      Node* local = mk_with_2(NMUL, _n, parentexpr);
+    Node* negexpr = p_negexpr();
+    if (negexpr != NULL) {
+      Node* local = mk_with_2(NMUL, _n, negexpr);
       Node* mul_  = p_mul_(local);
       if (mul_ != NULL) return mul_;
       return local;
     }
   } else if (expect_next(DIV)) {
-    Node* parentexpr = p_parentexpr();
-    if (parentexpr != NULL) {
-      Node* local = mk_with_2(NDIV, _n, parentexpr);
+    Node* negexpr = p_negexpr();
+    if (negexpr != NULL) {
+      Node* local = mk_with_2(NDIV, _n, negexpr);
       Node* mul_  = p_mul_(local);
       if (mul_ != NULL) return mul_;
       return local;
     }
   } else if (expect_next(MOD)) {
-    Node* parentexpr = p_parentexpr();
-    if (parentexpr != NULL) {
-      Node* local = mk_with_2(NMOD, _n, parentexpr);
+    Node* negexpr = p_negexpr();
+    if (negexpr != NULL) {
+      Node* local = mk_with_2(NMOD, _n, negexpr);
       Node* mul_  = p_mul_(local);
       if (mul_ != NULL) return mul_;
       return local;
@@ -93,13 +94,13 @@ static Node* p_mul_(Node* _n) {
 }
 
 static Node* p_mulexpr() {
-  Node* parentexpr = p_parentexpr();
-  if (parentexpr == NULL) return NULL;
+  Node* negexpr = p_negexpr();
+  if (negexpr == NULL) return NULL;
 
-  Node* mul_ = p_mul_(parentexpr);
+  Node* mul_ = p_mul_(negexpr);
   if (mul_ != NULL) return mul_;
 
-  return parentexpr;
+  return negexpr;
 }
 
 static Node* p_add_(Node* _n) {
@@ -167,7 +168,7 @@ static Node* p_semi__(Node* _n) {
   Node* commonexpr = p_commonexpr();
   if (commonexpr == NULL) return NULL;
 
-  Node* local  = mk_with_2(NSEMICOLON, _n, commonexpr);
+  Node* local = mk_with_2(NSEMICOLON, _n, commonexpr);
   Node* semi_ = p_semi_(local);
   if (semi_ != NULL) return semi_;
 
@@ -201,6 +202,18 @@ static Node* p_printexpr() {
   if (semiexpr != NULL) return mk_with_1(NPRINT, semiexpr);
 
   return NULL;
+}
+
+static Node* p_negexpr() {
+  Token* backtrack = token;
+  if (!expect_next(SUB)) return p_parentexpr();
+  Node* negexpr = p_negexpr();
+  if (negexpr == NULL) {
+    token = backtrack;
+    return NULL;
+  }
+  Node* local = mk_with_1(NNEG, negexpr);
+  return local;
 }
 
 Node* parse_to_ast(Token* _tk) {

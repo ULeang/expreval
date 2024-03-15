@@ -6,7 +6,8 @@ commonexpr -> assignexpr | addexpr
 assignexpr -> VAR = commonexpr
 addexpr -> mulexpr add'
 add' -> + mulexpr add' | - mulexpr add' | ϵ
-mulexpr -> parentexpr mul'
-mul' -> * parentexpr mul' | / parentexpr mul' | % parentexpr mul' | ϵ
+mulexpr -> negexpr mul'
+mul' -> * negexpr mul' | / negexpr mul' | % negexpr mul' | ϵ
+negexpr -> - negexpr | parentexpr
 parentexpr -> ( semiexpr ) | primitive
 primitive -> NUM | VAR

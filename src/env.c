@@ -119,8 +119,13 @@ static int64_t eval_impl(Env* _env, Node* _ast) {
     if (eval_error) return 0;
     return eval_impl(_env, _ast->rc);
   }
-  default: fatal(EVALERR, "not implemented yet");
+  case NNEG: {
+    int64_t v = eval_impl(_env, _ast->lc);
+    if (eval_error) return 0;
+    return -v;
   }
+  }
+  return 0;
 }
 
 void eval(Node* _ast) {
