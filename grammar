@@ -1,0 +1,12 @@
+printexpr -> @ semiexpr | semiexpr | ϵ
+semiexpr -> commonexpr semi'
+semi' -> ; semi'' | ϵ
+semi'' -> commonexpr semi' | ϵ
+commonexpr -> assignexpr | addexpr
+assignexpr -> VAR = commonexpr
+addexpr -> mulexpr add'
+add' -> + mulexpr add' | - mulexpr add' | ϵ
+mulexpr -> parentexpr mul'
+mul' -> * parentexpr mul' | / parentexpr mul' | % parentexpr mul' | ϵ
+parentexpr -> ( semiexpr ) | primitive
+primitive -> NUM | VAR
