@@ -43,7 +43,7 @@ static Node* p_NUM() {
 }
 static Node* p_VAR() {
   if (!expect(VAR)) return NULL;
-  Node* ret = mk_var(take_var(token));
+  Node* ret = mk_var(dup_var(token));
   next();
   return ret;
 }
@@ -140,9 +140,8 @@ static Node* p_assignexpr() {
   Node*  var       = p_VAR();
   if (var == NULL) return NULL;
   if (!expect_next(ASSIGN)) {
-    token = backtrack;
-    give_var(token, take_node_var(var));
     free_ast(var);
+    token = backtrack;
     return NULL;
   }
   Node* commonexpr = p_commonexpr();
@@ -216,7 +215,7 @@ static Node* p_negexpr() {
   return local;
 }
 
-Node* parse_to_ast(Token* _tk) {
+Node* parse(Token* _tk) {
   token           = _tk->next;
   Node* line_prog = p_printexpr();
   if (token != NULL) {

@@ -4,6 +4,6 @@
 #include "ast.h"
 #include "lexer.h"
 
-Node* parse_to_ast(Token* _tk);
+Node* parse(Token* _tk);
 
 #endif  // !__PARSER_H__

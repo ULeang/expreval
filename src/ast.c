@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "util.h"
+#include <string.h>
 
 Node* mk_num(int64_t _n) {
   Node* ret = mk_plain(NNUM);
@@ -31,7 +30,7 @@ Node* mk_with_2(NodeType _nt, Node* _lc, Node* _rc) {
   ret->rc   = _rc;
   return ret;
 }
-
+/*
 #define free_stack_size 4096
 static Node*  free_stack[free_stack_size];
 static size_t top = 0;
@@ -61,12 +60,17 @@ void free_ast(Node* _nd) {
     _nd = pop();
   }
 }
+*/
 
-const char* take_node_var(Node* _nd) {
-  const char* ret = _nd->var;
-  _nd->var        = NULL;
-  return ret;
+void free_ast(Node* _nd) {
+  if (_nd == NULL) return;
+  free((void*)_nd->var);
+  free_ast(_nd->lc);
+  free_ast(_nd->rc);
+  free(_nd);
 }
+
+const char* dup_node_var(Node* _nd) { return strdup(_nd->var); }
 
 void print_ast(Node* _nd) {
   switch (_nd->nt) {

@@ -26,14 +26,10 @@ typedef struct Token {
   struct Token* next;
 } Token;
 
-void   get_cmd(const char* _cmd);
-Token* parse();  // return the head of the token list(contains no valid token)
+Token* tokenize(const char*_cmd);  // return the head of the token list(contains no valid token)
 void   free_token_list(Token* _t);  // free the whole list, including `var`
 void   print_token_list(Token* _tk);
-// sets `_tk->var` to NULL and return the previous value
-const char* take_var(Token* _tk);
-// if one production func takes var from a token, then the func fails,
-// the var should be given back to the token
-void give_var(Token* _tk, const char* _var);
+// dup `_tk->var` instead of take it, to eaze mental burden
+const char* dup_var(Token* _tk);
 
 #endif  // !__LEXER_H__

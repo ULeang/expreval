@@ -8,10 +8,8 @@
 
 #include "util.h"
 
-#define buffer_size 4096
-
-static char   buffer[buffer_size];
-static size_t cur = 0;
+static const char* buffer;
+static size_t      cur = 0;
 
 static char peek() { return buffer[cur]; }
 static bool next() {
@@ -26,12 +24,7 @@ static char next_peek() {
   return peek();
 }
 
-void get_cmd(const char* _cmd) {
-  strncpy(buffer, _cmd, buffer_size);
-
-  // guarantee that buffer is a null-terminated string, see `strncpy`
-  buffer[buffer_size - 1] = '\0';
-}
+static void get_cmd(const char* _cmd) { buffer = _cmd; }
 
 static int64_t parse_dec() {
   int64_t sum = peek() & 0b1111;
@@ -123,10 +116,11 @@ static const char* parse_var() {
     c = next_peek();
   } while (isalnum(c) || c == '_');
 
-  char* var = malloc((size + 1) * sizeof(char));
-  strncpy(var, buffer + start, size);
-  var[size] = '\0';
-  return var;
+  // char* var = malloc((size + 1) * sizeof(char));
+  // strncpy(var, buffer + start, size);
+  // var[size] = '\0';
+  // return var;
+  return strndup(buffer + start, size);
 }
 
 static Token* mk_plain_token(TokenType _tt) {
@@ -146,7 +140,9 @@ static Token* mk_var_token(const char* _var) {
   return tk;
 }
 
-Token* parse() {
+Token* tokenize(const char* _cmd) {
+  get_cmd(_cmd);
+
   Token* head = malloc(sizeof(Token));
   head->next  = NULL;
   Token* cur  = head;
@@ -198,23 +194,18 @@ void print_token_list(Token* _tk) {
     switch (_tk->tt) {
     case NUM: printf("NUM: %lu\n", _tk->num); break;
     case VAR: printf("VAR: %s\n", _tk->var); break;
-    case LPARENT: printf("LITERAL: %c\n", '('); break;
-    case RPARENT: printf("LITERAL: %c\n", ')'); break;
-    case ADD: printf("LITERAL: %c\n", '+'); break;
-    case SUB: printf("LITERAL: %c\n", '-'); break;
-    case MUL: printf("LITERAL: %c\n", '*'); break;
-    case DIV: printf("LITERAL: %c\n", '/'); break;
-    case MOD: printf("LITERAL: %c\n", '%'); break;
-    case ASSIGN: printf("LITERAL: %c\n", '='); break;
-    case SEMICOLON: printf("LITERAL: %c\n", ';'); break;
-    case AT: printf("LITERAL: %c\n", '@'); break;
+    case LPARENT: printf("LTR: %c\n", '('); break;
+    case RPARENT: printf("LTR: %c\n", ')'); break;
+    case ADD: printf("LTR: %c\n", '+'); break;
+    case SUB: printf("LTR: %c\n", '-'); break;
+    case MUL: printf("LTR: %c\n", '*'); break;
+    case DIV: printf("LTR: %c\n", '/'); break;
+    case MOD: printf("LTR: %c\n", '%'); break;
+    case ASSIGN: printf("LTR: %c\n", '='); break;
+    case SEMICOLON: printf("LTR: %c\n", ';'); break;
+    case AT: printf("LTR: %c\n", '@'); break;
     }
     _tk = _tk->next;
   }
 }
-const char* take_var(Token* _tk) {
-  const char* ret = _tk->var;
-  _tk->var        = NULL;
-  return ret;
-}
-void give_var(Token* _tk, const char* _var) { _tk->var = _var; }
+const char* dup_var(Token* _tk) { return strdup(_tk->var); }

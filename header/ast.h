@@ -27,13 +27,13 @@ typedef struct Node {
   const char* var;
 } Node;
 
+Node*       mk_plain(NodeType _nt);
 Node*       mk_num(int64_t _n);
 Node*       mk_var(const char* _v);
-Node*       mk_plain(NodeType _nt);
 Node*       mk_with_1(NodeType _nt, Node* _lc);
 Node*       mk_with_2(NodeType _nt, Node* _lc, Node* _rc);
 void        free_ast(Node* _nd);  // free the whole ast, including `var` field
-const char* take_node_var(Node* _nd);
+const char* dup_node_var(Node* _nd);
 
 void print_ast(Node* _nd);
 

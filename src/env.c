@@ -111,7 +111,7 @@ static int64_t eval_impl(Env* _env, Node* _ast) {
   case NASSIGN: {
     int64_t r = eval_impl(_env, _ast->rc);
     if (eval_error) return 0;
-    insert_or_update(_env, take_node_var(_ast->lc), r);
+    insert_or_update(_env, dup_node_var(_ast->lc), r);
     return r;
   }
   case NSEMICOLON: {
