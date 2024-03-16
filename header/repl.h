@@ -3,4 +3,6 @@
 
 void repl_launch();
 
+void scri_interpret(const char* _s);
+
 #endif

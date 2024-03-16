@@ -7,6 +7,7 @@
 #include "env.h"
 #include "lexer.h"
 #include "parser.h"
+#include "util.h"
 
 static void starting() {
   printf(
@@ -38,6 +39,21 @@ void repl_launch() {
     Node*  n = parse(t);
     eval_with(e, n);
   }
+  free_env(e);
+  free(buffer);
+}
+
+void scri_interpret(const char* _s) {
+  FILE* fp = fopen(_s, "r");
+  if (!fp) fatal(FILEERR, "`%s` not exists!", _s);
+  Env* e = mk_env();
+  buffer = malloc(4096);
+  while (fgets(buffer, 4096, fp)) {
+    Token* t = tokenize(buffer);
+    Node*  n = parse(t);
+    if (!eval_with(e, n)) break;
+  }
+  fclose(fp);
   free_env(e);
   free(buffer);
 }

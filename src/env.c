@@ -20,7 +20,7 @@ bool insert_or_update(Env* _env, const char* _var, int64_t _value) {
   if (cur->next == NULL) {
     cur               = _env->next;
     _env->next        = mk_env();
-    _env->next->var   = _var;
+    _env->next->var   = strdup(_var);
     _env->next->value = _value;
     _env->next->next  = cur;
     return false;
@@ -111,7 +111,7 @@ static int64_t eval_impl(Env* _env, Node* _ast) {
   case NASSIGN: {
     int64_t r = eval_impl(_env, _ast->rc);
     if (eval_error) return 0;
-    insert_or_update(_env, dup_node_var(_ast->lc), r);
+    insert_or_update(_env, _ast->lc->var, r);
     return r;
   }
   case NSEMICOLON: {
@@ -138,10 +138,12 @@ void eval_once(Node* _ast) {
   free_env(env);
 }
 
-void eval_with(Env* _env, Node* _ast) {
-  if (_ast == NULL) return;
+bool eval_with(Env* _env, Node* _ast) {
+  if (_ast == NULL) return true;
   eval_error = false;
   eval_impl(_env, _ast);
   fflush(stdout);
   free_ast(_ast);
+  if (eval_error) return false;
+  return true;
 }

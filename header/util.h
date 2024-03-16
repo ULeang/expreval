@@ -2,6 +2,7 @@
 #define __UTIL_H__
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define fatal(exit_code, fmt, args...)                          \
   ({                                                            \
@@ -17,6 +18,8 @@
   ({ fprintf(stderr, "\033[1;31merror\033[m:" fmt "\n", ##args); })
 
 typedef enum ExitCode {
+  FILEERR        = -2,
+  CMDARGERR      = -1,
   SUCCESS        = 0,
   NUMPREFIXERR   = 1,
   NUMERR         = 2,
