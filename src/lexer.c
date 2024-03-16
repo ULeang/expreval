@@ -24,7 +24,10 @@ static char next_peek() {
   return peek();
 }
 
-static void get_cmd(const char* _cmd) { buffer = _cmd; }
+static void get_cmd(const char* _cmd) {
+  buffer = _cmd;
+  cur    = 0;
+}
 
 static int64_t parse_dec() {
   int64_t sum = peek() & 0b1111;
@@ -124,9 +127,8 @@ static const char* parse_var() {
 }
 
 static Token* mk_plain_token(TokenType _tt) {
-  Token* tk = malloc(sizeof(Token));
+  Token* tk = calloc(sizeof(Token), 1);
   tk->tt    = _tt;
-  tk->next  = NULL;
   return tk;
 }
 static Token* mk_num_token(int64_t _num) {
@@ -143,8 +145,7 @@ static Token* mk_var_token(const char* _var) {
 Token* tokenize(const char* _cmd) {
   get_cmd(_cmd);
 
-  Token* head = malloc(sizeof(Token));
-  head->next  = NULL;
+  Token* head = calloc(sizeof(Token), 1);
   Token* cur  = head;
 
   char c;

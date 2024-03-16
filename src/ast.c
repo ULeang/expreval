@@ -15,7 +15,7 @@ Node* mk_var(const char* _v) {
   return ret;
 }
 Node* mk_plain(NodeType _nt) {
-  Node* ret = malloc(sizeof(Node));
+  Node* ret = calloc(sizeof(Node), 1);
   ret->nt   = _nt;
   return ret;
 }

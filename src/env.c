@@ -128,11 +128,20 @@ static int64_t eval_impl(Env* _env, Node* _ast) {
   return 0;
 }
 
-void eval(Node* _ast) {
+void eval_once(Node* _ast) {
   if (_ast == NULL) return;
   Env* env   = mk_env();
   eval_error = false;
   eval_impl(env, _ast);
+  fflush(stdout);
   free_ast(_ast);
   free_env(env);
+}
+
+void eval_with(Env* _env, Node* _ast) {
+  if (_ast == NULL) return;
+  eval_error = false;
+  eval_impl(_env, _ast);
+  fflush(stdout);
+  free_ast(_ast);
 }
